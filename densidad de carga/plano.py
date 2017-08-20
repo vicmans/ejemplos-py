@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+print "Inserte los siguientes datos"
 a2=float(input('Longitud del largo del cuadrito pequeno: '))
 l=float(input('lado del plano: '))
 v=float(input('voltaje: '))
