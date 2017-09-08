@@ -7,7 +7,7 @@ L=input('longitud: ')
 a=.001*lamda # radio transversal de la antena
 NT=input('segmentos: ')
 N=NT+1 # numero de nodos
-h=L/NT # paso numerico
+h=L/N # paso numerico
 
 c1=1/(2*np.sin(2*np.pi*h))
 c2=-2*np.cos(2*np.pi*h)
@@ -28,11 +28,33 @@ I=np.linalg.solve(Z,V)
 
 print I
 
+# distribucion de corriente con funciones base
+Nx=10*N # numero de muestras de la corriente
+hx=L/Nx # paso para el computo de las funciones bases
+x2=np.linspace(0,L,Nx) # subespacio x'
+i=np.zeros((1,Nx)) # vector de muestras de la corriente
+f1=np.zeros((NT,Nx))
+f2=np.zeros((NT,Nx))
+
+c3=1/np.sin(2*np.pi*h)
+
+for n in range(1,N):
+  uno=((x2>(n*h)) & (x2<(h*(n+1)))).astype(int)
+  f1[n-1]=np.sin(2*np.pi*((n+1)*h-x2))*uno
+  f2[n-1]=np.sin(2*np.pi*(x2-(n-1)*h))*(((x2<(n*h))&(x2>(h*(n-1))))).astype(int)
+  i=i+I[n-1]*c3*(f1[n-1]+f2[n-1])
+
 # graficar
 
 import matplotlib.pyplot as plt
 
-plt.plot(I)
+
+#plt.plot(I)
+#plt.ylabel('Distribucion de Corriente')
+#plt.xlabel('segmentos')
+#plt.show()
+toplo=np.absolute(i)
+plt.plot(x2,toplo[0])
 plt.ylabel('Distribucion de Corriente')
-plt.xlabel('segmentos')
+plt.xlabel('landas')
 plt.show()
