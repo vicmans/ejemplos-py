@@ -1,11 +1,16 @@
+""" Calculo de distribucion de corriente de un dipolo simple
+con exitacion Voltaje GAP a 1V
+
+"""
+
 import numpy as np
 
 lamda = 1 #longitud de onda (normalizada= siempre uno)
-gap=0.01*lamda # tama{\~n}o del gap de alimentacion
+gap=0.01*lamda # tamano del gap de alimentacion
 eta=377 # impedancia intrinseca del vacio
-L=input('longitud: ')
+L=float(input('longitud (en longitudes de onda): '))
 a=.001*lamda # radio transversal de la antena
-NT=input('segmentos: ')
+NT=input('Numero de segmentos: ')
 N=NT+1 # numero de nodos
 h=L/N # paso numerico
 
@@ -33,8 +38,8 @@ Nx=10*N # numero de muestras de la corriente
 hx=L/Nx # paso para el computo de las funciones bases
 x2=np.linspace(0,L,Nx) # subespacio x'
 i=np.zeros((1,Nx)) # vector de muestras de la corriente
-f1=np.zeros((NT,Nx))
-f2=np.zeros((NT,Nx))
+f1=np.zeros((N,Nx))
+f2=np.zeros((N,Nx))
 
 c3=1/np.sin(2*np.pi*h)
 
@@ -44,17 +49,38 @@ for n in range(1,N):
   f2[n-1]=np.sin(2*np.pi*(x2-(n-1)*h))*(((x2<(n*h))&(x2>(h*(n-1))))).astype(int)
   i=i+I[n-1]*c3*(f1[n-1]+f2[n-1])
 
+
+# vector de radiacion
+y=np.arange(-L/2,L/2-hx/2,hx)#[:, newaxis]
+theta=np.linspace(0,np.pi,40)
+ctheta=np.diag(np.cos(theta))
+xtheta=np.tile(y,(len(ctheta),1))
+ytheta=xtheta.T.dot(ctheta)
+Nr=i.dot(np.exp(1j*2*np.pi*ytheta)) # vector de radiacion
+Atheta=Nr*np.sin(theta); # Atheta en la zona lejana
+
 # graficar
 
 import matplotlib.pyplot as plt
 
+fig = plt.figure()
 
-#plt.plot(I)
-#plt.ylabel('Distribucion de Corriente')
-#plt.xlabel('segmentos')
-#plt.show()
-toplo=np.absolute(i)
-plt.plot(x2,toplo[0])
+ax1 = fig.add_subplot(211)
+ax1.plot(np.absolute(I));
+plt.ylabel('Distribucion de Corriente')
+plt.xlabel('muestras')
+
+ax2 = fig.add_subplot(223)
+ax2.plot(x2,np.absolute(i[0]),color='green');
 plt.ylabel('Distribucion de Corriente')
 plt.xlabel('landas')
+
+ax3 = fig.add_subplot(224, projection='polar')
+
+F=np.absolute(Atheta[0])/np.max(np.absolute(Atheta[0]))
+ax3.plot(theta.T,F,-theta.T,F, color='blue')
+ax3.set_title("Patron de radiacion", va='baseline')
+
+fig.subplots_adjust(hspace=0.4)
+
 plt.show()
