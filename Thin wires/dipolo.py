@@ -58,14 +58,16 @@ xtheta=np.tile(y,(len(ctheta),1))
 ytheta=xtheta.T.dot(ctheta)
 Nr=i.dot(np.exp(1j*2*np.pi*ytheta)) # vector de radiacion
 Atheta=Nr*np.sin(theta); # Atheta en la zona lejana
-
+Afi=Atheta[0][19] # El valor cuando tita=90, plano xy
+fi=np.linspace(0,2*np.pi,40)
 # graficar
 
 import matplotlib.pyplot as plt
 
 fig = plt.figure()
+fig.suptitle(r'Dipolo '+str(L)+'$\lambda$',fontsize=14)
 
-ax1 = fig.add_subplot(211)
+ax1 = fig.add_subplot(221)
 ax1.plot(np.absolute(I));
 plt.ylabel('Distribucion de Corriente')
 plt.xlabel('muestras')
@@ -75,11 +77,17 @@ ax2.plot(x2,np.absolute(i[0]),color='green');
 plt.ylabel('Distribucion de Corriente')
 plt.xlabel('landas')
 
-ax3 = fig.add_subplot(224, projection='polar')
+ax3 = fig.add_subplot(222, projection='polar')
 
 F=np.absolute(Atheta[0])/np.max(np.absolute(Atheta[0]))
 ax3.plot(theta.T,F,-theta.T,F, color='blue')
 ax3.set_title("Patron de radiacion", va='baseline')
+
+ax4 = fig.add_subplot(224, projection='polar')
+
+Ffi=np.absolute(Afi/np.max(np.absolute(Atheta[0]))*np.ones((1,40)))
+ax4.plot(fi,Ffi[0], color='blue')
+ax4.set_title("Plano Horizontal", va='baseline')
 
 fig.subplots_adjust(hspace=0.4)
 
