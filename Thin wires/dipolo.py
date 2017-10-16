@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """ Calculo de distribucion de corriente de un dipolo simple
 con exitacion Voltaje GAP a 1V
 
